@@ -15,4 +15,10 @@ public class DemoController {
     public ResponseDTO index(String input, String secondInput) {
         return service.getMessage(input, secondInput);
     }
+
+    @Get(uri="/retrieve/{input}", produces="application/json")
+    public ResponseDTO retrieve(String input) {
+        return service.getCompletedMessage(input);
+    }
+
 }

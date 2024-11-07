@@ -42,8 +42,9 @@ class DemoTest {
     }
 
     @Test
-    void testResponse() {
+    void testResponse() throws InterruptedException {
         log.info("Application name: {}", appName);
+        log.info("########################## FIRST");
         //first request
         {
             HttpRequest<?> request = HttpRequest.GET("/demo/index/gigi/1111").accept(MediaType.APPLICATION_JSON);
@@ -74,23 +75,32 @@ class DemoTest {
 //            Assertions.assertEquals(expected, responseDTO);
         }
         //second request
+        Thread.sleep(1000);
+        log.info("########################## SECOND");
         {
-            HttpRequest<?> request = HttpRequest.GET("/demo/index/gogu/1111").accept(MediaType.APPLICATION_JSON);
+            HttpRequest<?> request = HttpRequest.GET("/demo/retrieve/gigi").accept(MediaType.APPLICATION_JSON);
             String response = client.toBlocking().retrieve(request);
-            log.info("Response JSON: {}", response);
+            log.info("Complete response JSON: {}", response);
+            //tranform JSON to class
+            Jsonb jsonb = JsonbBuilder.create();
+            ResponseDTO responseDTO = jsonb.fromJson(response, ResponseDTO.class);
+            log.info("Response DTO: {}", responseDTO);
         }
-        //second request will come out of the cache because the first parameter is identical
+        //third request
+        Thread.sleep(3000);
+        log.info("########################## THIRD");
         {
-            HttpRequest<?> request = HttpRequest.GET("/demo/index/gigi/2222").accept(MediaType.APPLICATION_JSON);
+            HttpRequest<?> request = HttpRequest.GET("/demo/retrieve/gigi").accept(MediaType.APPLICATION_JSON);
             String response = client.toBlocking().retrieve(request);
-            log.info("Response JSON: {}", response);
+            log.info("Complete response JSON: {}", response);
+            //tranform JSON to class
+            Jsonb jsonb = JsonbBuilder.create();
+            ResponseDTO responseDTO = jsonb.fromJson(response, ResponseDTO.class);
+            log.info("Response DTO: {}", responseDTO);
         }
-        //fourth request will come out of the cache because the first parameter is identical
-        {
-            HttpRequest<?> request = HttpRequest.GET("/demo/index/gogu/2222").accept(MediaType.APPLICATION_JSON);
-            String response = client.toBlocking().retrieve(request);
-            log.info("Response JSON: {}", response);
-        }
+        //final
+        Thread.sleep(3000);
+        log.info("########################## DONE");
     }
 
 }
